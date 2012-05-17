@@ -5,6 +5,7 @@ assets = require 'connect-assets'
 app = express.createServer()
 app.use assets()
 app.set 'view engine', 'jade'
+app.use express.static __dirname + '/public'
 
 app.get '/', (req, resp) -> resp.render 'index'
 
