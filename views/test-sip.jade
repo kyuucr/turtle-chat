@@ -1,0 +1,31 @@
+h1= title
+p Welcome to #{title}
+script(type='text/javascript')
+  var testSip = 'REGISTER sip:192.168.1.27 SIP/2.0\\r\\n' +
+   'Via: SIP/2.0/TCP 192.168.1.13:5061;branch=z9hG4bKnashds7\\r\\n' +
+   'Max-Forwards: 70\\r\\n' +
+   'From: 1001 <sip:1001@192.168.1.27>;tag=a73kszlfl\\r\\n' +
+   'To: 1001 <sip:1001@192.168.1.27>\\r\\n' +
+   'Call-ID: 1j9FpLxk3uxtm8tn@192.168.1.27\\r\\n' +
+   'CSeq: 1 REGISTER\\r\\n' +
+   'Contact: <sip:1001@192.168.1.13>;transport=WS>\\r\\n' +
+   'Expires: 3600\\r\\n' +
+   'Content-Length: 0\\r\\n\\r\\n';
+
+  function sendToServer() {
+    ws.send('sipMessage', testSip);
+  }
+
+  // set-up web socket
+  var ws = $.websocket("ws://192.168.1.27:3000/", "sip-websocket", {
+    open: function () { },
+    close: function () { alert('websocket has been closed'); },
+    events: {
+        sipMessage: function (e) { $('#returnText').append(e.data + "<br/>"); },
+    }
+  });
+div
+  div(style='clear: left;')
+    input(type='button', onclick='javascript:sendToServer();', value='Send')
+  div(id='returnText', style='clear: left; height: 200px; padding-top: 30px;')
+
