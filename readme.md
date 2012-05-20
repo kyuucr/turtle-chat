@@ -1,7 +1,7 @@
 # README
 
 This is an implementation of web-based SIP client-server. Don't get your
-hope to high, this project is still in development.
+hope too high, this project is still in development.
 
 ## Thanks to
 

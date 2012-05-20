@@ -1,5 +1,5 @@
 fs            = require 'fs'
-{print}       = require 'sys'
+{print}       = require 'util'
 {spawn, exec} = require 'child_process'
 
 # ANSI Terminal Colors
@@ -8,9 +8,9 @@ red   = '\x1B[0;31m'
 green = '\x1B[0;32m'
 reset = '\x1B[0m'
 
-package = JSON.parse fs.readFileSync('./package.json')
-testCmd = package.scripts.test
-startCmd = package.scripts.start
+packageJson = JSON.parse fs.readFileSync('./package.json')
+testCmd = packageJson.scripts.test
+startCmd = packageJson.scripts.start
   
 
 log = (message, color, explanation) ->
