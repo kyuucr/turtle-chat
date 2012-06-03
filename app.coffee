@@ -23,7 +23,7 @@ app.use assets()
 app.set 'view engine', 'jade'
 app.use express.static __dirname + '/public'
 
-app.get '/', (req, resp) -> resp.render 'test-sip', {title: 'turtle-chat'}
+app.get '/', (req, resp) -> resp.render 'phone', {title: 'turtle-chat'}
 
 app.listen process.env.VMC_APP_PORT or 3000, -> util.debug bold + 'Webserver listening on port ' + app.address().port + ' ...' + reset
 

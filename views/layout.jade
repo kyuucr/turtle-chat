@@ -7,23 +7,21 @@ head
   !!!
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  meta(charset='utf-8')
-  title turtle-chat
-  meta(name='description', content='')
-  meta(name='author', content='')
-  // Mobile Specific
-  meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= 'turtle-chat'
+    meta(charset='utf-8')
+    meta(name='description', content='')
+    meta(name='author', content='')
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
 
-  != css('app')
-  != js('jquery-1.7.2.min.js')
-  != js('jquery.json-2.3.min.js')
-  != js('jquery.websocket-0.0.1.js')
-  != js('app')
+    != css('app')
+    != js('app')
   
-body
-  != body
+  body
+    header
+      span(id='logo')
+      h1 turtle-chat
+    span(class='divider')
+    != body
 
 
 | </html>
