@@ -160,16 +160,16 @@ Phone.prototype.detectHTML5 = function() {
         // add <video> to local and remote video boxes
         var local = document.createElement("video");
         local.id = "html5-local-video";
-        local.style.width = "240";
-        local.style.height = "168";
+        local.style.width = "240px";
+        local.style.height = "168px";
 //        local.style.backgroundColor = "#000000";
         local.autoplay = "autoplay";
         $('local-video').appendChild(local);
         
         var remote = document.createElement("video");
         remote.id = "html5-remote-video";
-        remote.style.width = "240";
-        remote.style.height = "168";
+        remote.style.width = "240px";
+        remote.style.height = "168px";
 //        remote.style.backgroundColor = "#000000";
         remote.autoplay = "autoplay";
         $('remote-video').appendChild(remote);
@@ -177,6 +177,7 @@ Phone.prototype.detectHTML5 = function() {
         var audio = document.createElement("audio");
         audio.id = "html5-audio";
         audio.autoplay = "autoplay";
+        audio.loop = "loop";
         $("webrtc-network").appendChild(audio);
     }
 };
@@ -392,6 +393,7 @@ Phone.prototype.call = function() {
             this.setProperty("call_button.disabled", true);
             this.setProperty("end_button.disabled", false);
             this.sendInviteResponse(200, 'OK');
+            this.playSound('');
         }
         else {
             this.dispatchMessage("End the existing call first");
@@ -417,6 +419,7 @@ Phone.prototype.end = function() {
         this.setProperty("call_button.disabled", false);
         this.setProperty("end_button.disabled", true);
         this.setProperty("call_state", "idle");
+        this.playSound('');
     }
 };
 
