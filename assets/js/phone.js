@@ -177,6 +177,7 @@ Phone.prototype.detectHTML5 = function() {
         var audio = document.createElement("audio");
         audio.id = "html5-audio";
         audio.autoplay = "autoplay";
+        audio.loop = "loop";
         $("webrtc-network").appendChild(audio);
     }
 };
@@ -392,6 +393,7 @@ Phone.prototype.call = function() {
             this.setProperty("call_button.disabled", true);
             this.setProperty("end_button.disabled", false);
             this.sendInviteResponse(200, 'OK');
+            this.playSound('');
         }
         else {
             this.dispatchMessage("End the existing call first");
@@ -417,6 +419,7 @@ Phone.prototype.end = function() {
         this.setProperty("call_button.disabled", false);
         this.setProperty("end_button.disabled", true);
         this.setProperty("call_state", "idle");
+        this.playSound('');
     }
 };
 
