@@ -14,14 +14,13 @@ html
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
 
     != css('app')
-    != js('app')
-  
   body
     header
       span(id='logo')
       h1 turtle-chat
     span(class='divider')
-    != body
+    .wrap
+      != body
 
 
 | </html>

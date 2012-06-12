@@ -1,11 +1,15 @@
 html
   head
+    != js('jquery-1.7.2.min.js')
+    != js('jquery.colorbox-min.js')
+
     script(type='text/javascript')
-      function $(name) {
+      var log_status = 0;
+      function sel(name) {
         return document.getElementById(name);
       }
       function log(msg, type) {
-        var log_text = $("log-text");
+        var log_text = sel("log-text");
         if (log_text) {
           log_text.value += "\n" + msg;
         if (phone && phone.log_scroll)
@@ -13,385 +17,329 @@ html
         }
       };
 
-    != css('phone')
     != js('sip.js')
     != js('phone.js')
-    //- script(type='text/javascript', src='http://theintencity.com/flash-network/swfobject.js')
-    //- script(type='text/javascript', src='http://theintencity.com/flash-network/json2.js')
-    //- script(type='text/javascript', src='http://theintencity.com/flash-network/base64.js')
-    //- script(type='text/javascript', src='http://theintencity.com/flash-network/flash-network.js')
+    != css('colorbox')
   body
-    #config-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Configuration
-        .help-div
-          a(href='#', title='Save configuration', onclick='return phone.enableBox(\'config\', false);')
-            img#save_config.help-img(src='save.png', style='visibility: hidden;')
-          a(href='#', title='Edit configuration', onclick='return phone.enableBox(\'config\', true);')
-            img#edit_config.help-img(src='edit.png', style='visibility: visible;')
-          a(href='#', title='How to configure your phone?', onclick='return phone.help(\'configuration\');')
-            img.help-img(src='help.png')
-      table
-        tr
-          td(align='right') Display Name:
-          td
-            input#displayname.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'displayname\', $(\'displayname\').value),100)')
-        tr
-          td(align='right') User Name:
-          td
-            input#username.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'username\', $(\'username\').value),100)')
-        tr
-          td(align='right') Domain:
-          td
-            input#domain.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'domain\', $(\'domain\').value),100)')
-        tr
-          td(align='right') Auth Name:
-          td
-            input#authname.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'authname\', $(\'authname\').value),100)')
-        tr
-          td(align='right') Password:
-          td
-            input#password.text(type='password', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'password\', $(\'password\').value),100)')
-        tr
-          td(align='right', colspan='2')
-            | Transport:
-            input#transport_udp.radio(type='radio', name='transport', value='udp', disabled='disabled', onclick='phone.setProperty(\'transport\', \'udp\')')
-            | UDP,
-            input#transport_tcp.radio(type='radio', name='transport', value='tcp', disabled='disabled', onclick='phone.setProperty(\'transport\', \'tcp\')')
-            | TCP,
-            input#transport_ws.radio(type='radio', name='transport', value='ws', disabled='disabled', onclick='phone.setProperty(\'transport\', \'ws\')')
-            | WS
-    #call-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Call
-        .help-div
-          a(href='#', title='Save call capabilities', onclick='return phone.enableBox(\'call\', false);')
-            img#save_call.help-img(src='save.png', style='visibility: hidden;')
-          a(href='#', title='Edit call capabilities', onclick='return phone.enableBox(\'call\', true);')
-            img#edit_call.help-img(src='edit.png', style='visibility: visible;')
-          a(href='#', title='How to make/receive call?', onclick='return phone.help(\'call\');')
-            img.help-img(src='help.png')
-      div(style='padding: 4px;')
-        select#target_scheme.uri-scheme(disabled='disabled', onchange='phone.setProperty(\'target_scheme\', [\'sip\', \'tel\', \'urn\'][$(\'target_scheme\').selectedIndex])')
-          option#target_scheme_sip(value='sip') sip
-          option#target_scheme_tel(value='tel') tel
-          option#target_scheme_urn(value='urn') urn
-        | :
-        input#target_value.uri-value(type='text', value='', disabled='disabled', onkeyup='setTimeout(phone.setProperty(\'target_value\', $(\'target_value\').value), 100)')
-        div(style='position: absolute; left: 81px; top: 50px; right: 2px; overflow: hidden;')
-          table(cellpadding='0', cellspacing='0', width='100%')
-            tr
-              td
-                .dialdiv(onclick='phone.sendDigit(\'1\')')
-                  span.dialnumber 1
-              td
-                .dialdiv(onclick='phone.sendDigit(\'2\')')
-                  span.dialnumber 2
-                  span.dialletter abc
-              td
-                .dialdiv(onclick='phone.sendDigit(\'3\')')
-                  span.dialnumber 3
-                  span.dialletter def
-            tr
-              td
-                .dialdiv(onclick='phone.sendDigit(\'4\')')
-                  span.dialnumber 4
-                  span.dialletter ghi
-              td
-                .dialdiv(onclick='phone.sendDigit(\'5\')')
-                  span.dialnumber 5
-                  span.dialletter jkl
-              td
-                .dialdiv(onclick='phone.sendDigit(\'6\')')
-                  span.dialnumber 6
-                  span.dialletter mno
-            tr
-              td
-                .dialdiv(onclick='phone.sendDigit(\'7\')')
-                  span.dialnumber 7
-                  span.dialletter pqrs
-              td
-                .dialdiv(onclick='phone.sendDigit(\'8\')')
-                  span.dialnumber 8
-                  span.dialletter tuv
-              td
-                .dialdiv(onclick='phone.sendDigit(\'9\')')
-                  span.dialnumber 9
-                  span.dialletter wxyz
-            tr
-              td
-                .dialdiv(onclick='phone.sendDigit(\'*\')', style='overflow: hidden;')
-                  span.dialnumber(style='font-size: 20pt; display: block;') *
-              td
-                .dialdiv(onclick='phone.sendDigit(\'0\')')
-                  span.dialnumber 0
-              td
-                .dialdiv(onclick='phone.sendDigit(\'#\')')
-                  span.dialnumber #
-                  span.dialletter abc
-        div(style='position: absolute; bottom: 2px; left: 80px; right: 2px; overflow: hidden;')
-          input#call_button.callbutton(type='button', value='Call', disabled='disabled', onclick='return phone.call();', title='click to call or answer')
-          input#end_button.endbutton(type='button', value='End', disabled='disabled', onclick='return phone.end();', title='click to cancel, decline or hang up')
-        div(style='position: absolute; left: 2px; top: 50px; width: 77px; bottom: 2px;')
-          input#has_audio.checkbox(type='checkbox', disabled='disabled', title='Audio codec using pcmu, pcma and speex', onclick='phone.setProperty(\'has_audio\', $(\'has_audio\').checked)')
-          | Audio
-          br
-          input#has_tones.checkbox(type='checkbox', disabled='disabled', title='DTMF tones using RFC 4733', onclick='phone.setProperty(\'has_tones\', $(\'has_tones\').checked)')
-          | Tones
-          br
-          input#has_video.checkbox(type='checkbox', disabled='disabled', title='Video codec using h264', onclick='phone.setProperty(\'has_video\', $(\'has_video\').checked)')
-          | Video
-          br
-          input#has_text.checkbox(type='checkbox', disabled='disabled', title='Real-time text using t140 and RFC 4351', onclick='phone.setProperty(\'has_text\', $(\'has_text\').checked)')
-          | Text
-          br
-          input#has_location.checkbox(type='checkbox', disabled='disabled', title='Caller location for emergency calls', onclick='phone.setProperty(\'has_location\', $(\'has_location\').checked)')
-          | Location
-          br
-        div(style='position: absolute; left: 6px; bottom: 6px;')
-          span#call_state idle
-    #local-video-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Local Video
-        input#local-video-on(type='checkbox', style='height: 12px; padding: 0px; margin: 0px;', onclick='phone.setVideoProperty(\'local-video\', \'live\', $(\'local-video-on\').checked)')
-        .help-div
-          a(href='#', title='Toggle control panel', onclick='return phone.toggleControls(\'local-video\')')
-            img.help-img(src='edit.png', style='visibility: visible;')
-          a(href='#', title='What is local video?', onclick='return phone.help(\'local-video\');')
-            img.help-img(src='help.png')
-      #local-video
-        h2 Alternative content
-        p
-          a(href='http://www.adobe.com/go/getflashplayer')
-            img(src='http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif', alt='Get Adobe Flash player')
-    #flash-network-box.content-box.has-shadow.has-gradient
-      .content-header
-        span#network_type
-        | Network
-        //- | (
-        //- a(href='#', onclick='phone.changeNetworkType()') change
-        //- | )
-        .help-div
-          a(href='#', title='Save network properties', onclick='return phone.enableBox(\'network\', false);')
-            img#save_network.help-img(src='save.png', style='visibility: hidden;')
-          a(href='#', title='Edit network properties', onclick='return phone.enableBox(\'network\', true);')
-            img#edit_network.help-img(src='edit.png', style='visibility: visible;')
-          a(href='#', title='What is Flash Network?', onclick='return phone.help(\'flash-network\');')
-            img.help-img(src='help.png')
-      div(style='position: absolute; left: 4px;')
-        input#listen_ip.text(type='text', style='width: 100px;', disabled='disabled', onkeyup='setTimeout(phone.setProperty(\'listen_ip\', $(\'listen_ip\').value),100)')
-      #network_status(style='position: absolute; right: 4px;')
-      div(style='position: absolute; top: 46px; left: 12px;')
-        #flash-network
-          h2 Alternative content
-          p
-            a(href='http://www.adobe.com/go/getflashplayer')
-              img(src='http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif', alt='Get Adobe Flash player')
-      #webrtc-network(style='position: absolute; top: 22px; left: 12px; width: 215px; height: 138px; visibility: hidden;')
-        | Path:
-        input#websocket_path.text(type='text', style='width: 40px;', disabled='disabled', title='websocket path to the SIP proxy application', onkeyup='setTimeout(phone.setProperty(\'websocket_path\', $(\'websocket_path\').value),100)')
-        input#enable_sound_alert(type='checkbox', disabled='disabled', title='enable or disable sound alert for text messages and call', onclick='phone.setProperty(\'enable_sound_alert\', $(\'enable_sound_alert\').checked)')
-        | Alert
-        br
-        br
-        | Detecting HTML5 support:
-        ol(style='margin-top: 0px; margin-bottom: 0px;')
-          li
-            | video -
-            b
-              span#has_html5_video
-          li
-            | websocket -
-            b
-              span#has_html5_websocket
-          li
-            | webrtc -
-            b
-              span#has_html5_webrtc
-    #register-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Register
-        .help-div
-          a(href='#', title='Save register parameters', onclick='return phone.enableBox(\'register\', false);')
-            img#save_register.help-img(src='save.png', style='visibility: hidden;')
-          a(href='#', title='Edit register parameters', onclick='return phone.enableBox(\'register\', true);')
-            img#edit_register.help-img(src='edit.png', style='visibility: visible;')
-          a(href='#', title='How to register/login?', onclick='return phone.help(\'register\');')
-            img.help-img(src='help.png')
-      div(style='padding: 2px;')
-        | Send outbound via:
-        br
-        div(style='padding-left: 10px;')
-          input#outbound_target.radio(type='radio', name='outbound', value='target', disabled='disabled', onclick='phone.setProperty(\'outbound\', \'target\')')
-          | target domain, or
-          br
-          input#outbound_proxy.radio(type='radio', name='outbound', value='proxy', disabled='disabled', onclick='phone.setProperty(\'outbound\', \'proxy\')')
-          | proxy  address:
-          input#outbound_proxy_address.text(type='text', value='', style='width: 94px;', disabled='disabled', onkeyup='setTimeout(phone.setProperty(\'outbound_proxy_address\', $(\'outbound_proxy_address\').value),100)')
-        | Register every
-        input#register_interval.text(type='text', value='', style='width: 40px;', disabled='disabled', onclick='phone.setProperty(\'register_interval\', parseInt($(\'register_interval\')).value)')
-        | seconds
-        br
-        input#rport.radio(type='checkbox', disabled='disabled', onclick='phone.setProperty(\'rport\', $(\'rport\').checked)')
-        | Use rport,
-        input#sipoutbound.radio(type='checkbox', disabled='disabled', onclick='phone.setProperty(\'sipoutbound\', $(\'sipoutbound\').checked)')
-        | Use sip-outbound
-        br
-        | AoR:
-        input#local_aor.text(type='text', style='width: 190px;', readonly='readonly', disabled='disabled')
-        div(style='position: absolute; bottom: 0px; left: 4px; right: 0px;')
-          span#sock_state idle
-          | ,
-          span#register_state not registered
-          div(style='float: right;')
-            input#register_button.button(type='button', value='Register', disabled='disabled', title='click to register or unregister', onclick='return phone.register();')
-    #im-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Text Chat
-        .help-div
-          a(href='#', title='Print text chat', onclick='return phone.print($(\'im-history\').value)')
-            img.print-img(src='print.png')
-          a(href='#', title='How to send/receive text chat?', onclick='return phone.help(\'im\');')
-            img.help-img(src='help.png')
-      div(style='width: 100%; height: 170px; bottom: 0px;')
-        #im-history-box
-          textarea#im-history(readonly='readonly') This area displays the text messages.
-        input#im-input(type='text', onkeyup='return phone.sendChar(event);', onchange='phone.sendText($(\'im-input\').value); $(\'im-input\').value=\'\'; return false;')
-        input#im-button(type='button', value='send', onclick='phone.sendText($(\'im-input\').value); $(\'im-input\').value=\'\'; return false;')
-    #remote-video-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Remote Video
-        .help-div
-          a(href='#', title='Toggle control panel', onclick='phone.setVideoProperty(\'remote-video\', \'controls\', !phone.getVideoProperty(\'remote-video\', \'controls\')); return false;')
-            img.help-img(src='edit.png', style='visibility: visible;')
-          a(href='#', title='What is remote video?', onclick='return phone.help(\'remote-video\');')
-            img.help-img(src='help.png')
-      #remote-video
-        h2 Alternative content
-        p
-          a(href='http://www.adobe.com/go/getflashplayer')
-            img(src='http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif', alt='Get Adobe Flash player')
-    #help-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Getting Started
-        .help-div
-          a(href='#', title='Getting started guide', onclick='return phone.help(\'default\');')
-            img.help-img(src='help.png')
-      #help(style='padding: 4px; overflow: auto; width: 232px; height: 160px; text-align: justify;')
-    #log-box.content-box.has-shadow.has-gradient
-      .content-header
-        | Program Log
-        | (auto-scroll?
-        input#log_scroll(type='checkbox', style='font-size: small;', onclick='phone.setProperty(\'log_scroll\', $(\'log_scroll\').checked)')
-        | )
-        .help-div
-          a(href='#', title='Print text chat', onclick='return phone.print($(\'log-text\').value)')
-            img.print-img(src='print.png')
-          a(href='#', title='What is Program Log?', onclick='return phone.help(\'program-log\');')
-            img.help-img(src='help.png')
+    #error-alert(style='position: relative; float: right; margin-top: 5px')
+    input.button(style='position: relative; float: right; margin-top: 10px', type='button', value='Unregister', title='click to unregister', onclick='return phone.register();')
+    .wrap-box-1
+      #call-box.content-box.has-shadow.has-gradient
+        .content-header
+          | Call
+          .help-div
+            a(href='#', title='Save call capabilities', onclick='return phone.enableBox(\'call\', false);')
+              img#save_call.help-img(src='save.png', style='visibility: hidden;')
+            a(href='#', title='Edit call capabilities', onclick='return phone.enableBox(\'call\', true);')
+              img#edit_call.help-img(src='edit.png', style='visibility: visible;')
+            a(href='#', title='How to make/receive call?', onclick='return phone.help(\'call\');')
+              img.help-img(src='help.png')
+        div(style='padding: 4px;')
+          select#target_scheme.uri-scheme(disabled='disabled', onchange='phone.setProperty(\'target_scheme\', [\'sip\', \'tel\', \'urn\'][sel(\'target_scheme\').selectedIndex])')
+            option#target_scheme_sip(value='sip') sip
+            option#target_scheme_tel(value='tel') tel
+            option#target_scheme_urn(value='urn') urn
+          | :
+          input#target_value.uri-value(type='text', value='', disabled='disabled', onkeyup='setTimeout(phone.setProperty(\'target_value\', sel(\'target_value\').value), 100)')
+          div(style='position: absolute; left: 81px; top: 50px; right: 2px; overflow: hidden;')
+            table(cellpadding='0', cellspacing='0', width='100%')
+              tr
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'1\')')
+                    span.dialnumber 1
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'2\')')
+                    span.dialnumber 2
+                    span.dialletter abc
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'3\')')
+                    span.dialnumber 3
+                    span.dialletter def
+              tr
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'4\')')
+                    span.dialnumber 4
+                    span.dialletter ghi
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'5\')')
+                    span.dialnumber 5
+                    span.dialletter jkl
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'6\')')
+                    span.dialnumber 6
+                    span.dialletter mno
+              tr
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'7\')')
+                    span.dialnumber 7
+                    span.dialletter pqrs
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'8\')')
+                    span.dialnumber 8
+                    span.dialletter tuv
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'9\')')
+                    span.dialnumber 9
+                    span.dialletter wxyz
+              tr
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'*\')', style='overflow: hidden;')
+                    span.dialnumber(style='font-size: 20pt; display: block;') *
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'0\')')
+                    span.dialnumber 0
+                td
+                  .dialdiv(onclick='phone.sendDigit(\'#\')')
+                    span.dialnumber #
+                    span.dialletter abc
+          div(style='position: absolute; bottom: 2px; left: 80px; right: 2px; overflow: hidden;')
+            input#call_button.callbutton(type='button', value='Call', disabled='disabled', onclick='return phone.call();', title='click to call or answer')
+            input#end_button.endbutton(type='button', value='End', disabled='disabled', onclick='return phone.end();', title='click to cancel, decline or hang up')
+          div(style='position: absolute; left: 2px; top: 50px; width: 77px; bottom: 2px;')
+            input#has_audio.checkbox(type='checkbox', disabled='disabled', title='Audio codec using pcmu, pcma and speex', onclick='phone.setProperty(\'has_audio\', sel(\'has_audio\').checked)')
+            | Audio
+            br
+            //- input#has_tones.checkbox(type='checkbox', disabled='disabled', title='DTMF tones using RFC 4733', onclick='phone.setProperty(\'has_tones\', sel(\'has_tones\').checked)')
+            //- | Tones
+            //- br
+            input#has_video.checkbox(type='checkbox', disabled='disabled', title='Video codec using h264', onclick='phone.setProperty(\'has_video\', sel(\'has_video\').checked)')
+            | Video
+            br
+            //- input#has_text.checkbox(type='checkbox', disabled='disabled', title='Real-time text using t140 and RFC 4351', onclick='phone.setProperty(\'has_text\', sel(\'has_text\').checked)')
+            //- | Text
+            //- br
+            //- input#has_location.checkbox(type='checkbox', disabled='disabled', title='Caller location for emergency calls', onclick='phone.setProperty(\'has_location\', sel(\'has_location\').checked)')
+            //- | Location
+            //- br
+          div(style='position: absolute; left: 6px; bottom: 6px;')
+            span#call_state idle
+      #im-box.content-box.has-shadow.has-gradient
+        .content-header
+          | Text Chat
+          .help-div
+            a(href='#', title='Print text chat', onclick='return phone.print(sel(\'im-history\').value)')
+              img.print-img(src='print.png')
+            a(href='#', title='How to send/receive text chat?', onclick='return phone.help(\'im\');')
+              img.help-img(src='help.png')
+        div(style='width: 100%; height: 170px; bottom: 0px;')
+          #im-history-box
+            textarea#im-history(readonly='readonly') This area displays the text messages.
+          input#im-input(type='text', onkeyup='return phone.sendChar(event);', onchange='phone.sendText(sel(\'im-input\').value); sel(\'im-input\').value=\'\'; return false;')
+          input#im-button(type='button', value='send', onclick='phone.sendText(sel(\'im-input\').value); sel(\'im-input\').value=\'\'; return false;')
+    .wrap-box-2
+      #remote-video-box.content-box.has-shadow.has-gradient
+        .content-header
+          | Remote Video
+          .help-div
+            a(href='#', title='Toggle control panel', onclick='phone.setVideoProperty(\'remote-video\', \'controls\', !phone.getVideoProperty(\'remote-video\', \'controls\')); return false;')
+              img.help-img(src='edit.png', style='visibility: visible;')
+            a(href='#', title='What is remote video?', onclick='return phone.help(\'remote-video\');')
+              img.help-img(src='help.png')
+        #remote-video
+      #local-video-box.content-box.has-shadow.has-gradient
+        .content-header
+          | Local Video
+          input#local-video-on(type='checkbox', style='height: 12px; padding: 0px; margin: 0px;', onclick='phone.setVideoProperty(\'local-video\', \'live\', sel(\'local-video-on\').checked)')
+          .help-div
+            a(href='#', title='Toggle control panel', onclick='return phone.toggleControls(\'local-video\')')
+              img.help-img(src='edit.png', style='visibility: visible;')
+            a(href='#', title='What is local video?', onclick='return phone.help(\'local-video\');')
+              img.help-img(src='help.png')
+        #local-video
+    #log-box
       #log-text-div
-        textarea#log-text(readonly='readonly') This box displays the program trace
+        #log-box-header
+          #log-box-button.content-box Logs
+        #log-box-body.content-box
+          | auto-scroll?
+          input#log_scroll(type='checkbox', style='font-size: small;', onclick='phone.setProperty(\'log_scroll\', sel(\'log_scroll\').checked)')
+          textarea#log-text(readonly='readonly') This box displays the program trace
+    div(style='display: none')
+      #registration.has-center-gradient(style='padding:0 10px; height:100%')
+        h2 Login
+        #config-box
+          table
+            tr
+              td(align='right') Display Name:
+              td
+                input#displayname.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'displayname\', sel(\'displayname\').value),100)')
+            tr
+              td(align='right') User Name:
+              td
+                input#username.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'username\', sel(\'username\').value),100)')
+            tr
+              td(align='right') Domain:
+              td
+                input#domain.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'domain\', sel(\'domain\').value),100)')
+            tr
+              td(align='right') Auth Name:
+              td
+                input#authname.text(type='text', value='', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'authname\', sel(\'authname\').value),100)')
+            tr
+              td(align='right') Password:
+              td
+                input#password.text(type='password', disabled='disabled', style='width: 130px;', onkeyup='setTimeout(phone.setProperty(\'password\', sel(\'password\').value),100)')
+        #register-box
+          div(style='padding: 2px;')
+            | Send outbound via:
+            br
+            div(style='padding-left: 10px;')
+              input#outbound_target.radio(type='radio', name='outbound', value='target', disabled='disabled', onclick='phone.setProperty(\'outbound\', \'target\')')
+              | target domain, or
+              br
+              input#outbound_proxy.radio(type='radio', name='outbound', value='proxy', disabled='disabled', onclick='phone.setProperty(\'outbound\', \'proxy\')')
+              | proxy  address:
+              input#outbound_proxy_address.text(type='text', value='', style='width: 94px;', disabled='disabled', onkeyup='setTimeout(phone.setProperty(\'outbound_proxy_address\', sel(\'outbound_proxy_address\').value),100)')
+            | Register every
+            input#register_interval.text(type='text', value='', style='width: 40px;', disabled='disabled', onclick='phone.setProperty(\'register_interval\', parseInt(sel(\'register_interval\')).value)')
+            | seconds
+            br
+            input#rport.radio(type='checkbox', disabled='disabled', onclick='phone.setProperty(\'rport\', sel(\'rport\').checked)')
+            | Use rport,
+            input#sipoutbound.radio(type='checkbox', disabled='disabled', onclick='phone.setProperty(\'sipoutbound\', sel(\'sipoutbound\').checked)')
+            | Use sip-outbound
+            br
+            | AoR:
+            input#local_aor.text(type='text', style='width: 190px;', readonly='readonly', disabled='disabled')
+            div(style='position: relative; bottom: 0px; left: 4px; right: 0px;')
+              span#sock_state idle
+              | ,
+              span#register_state not registered
+              div(style='float: right;')
+                input#register_button.button(type='button', value='Register', disabled='disabled', title='click to register', onclick='return phone.register();')
+      #network-box
+        h2
+          span#network_type
+          | Network
+        #network_status(style='position: absolute; right: 8px;')
+        #webrtc-network(style='position: relative; left: 12px; width: 215px; height: 138px; float: left;')
+          //- | Path:
+          //- input#websocket_path.text(type='text', style='width: 40px;', disabled='disabled', title='websocket path to the SIP proxy application', onkeyup='setTimeout(phone.setProperty(\'websocket_path\', sel(\'websocket_path\').value),100)')
+          input#enable_sound_alert(type='checkbox', disabled='disabled', title='enable or disable sound alert for text messages and call', onclick='phone.setProperty(\'enable_sound_alert\', sel(\'enable_sound_alert\').checked)')
+          | Alert
+          br
+          br
+          | Detecting HTML5 support:
+          ol(style='margin-top: 0px; margin-bottom: 0px;')
+            li
+              | video -
+              b
+                span#has_html5_video
+            li
+              | websocket -
+              b
+                span#has_html5_websocket
+            li
+              | webrtc -
+              b
+                span#has_html5_webrtc
     script(type='text/javascript')
       var phone = new Phone();
       //network._debug = true;
       //network.onstatus = function(value) { phone.statusChanged(value); };
       //network.onnetworkchange = function() { phone.networkChanged(); };
-      phone.addEventListener("propertyChange", function(event) {
-        var value = event.newValue;
-        var property = event.property;
-        var subprop = "";
-        if (property.indexOf(".") >= 0) {
-          var parts = property.split(".");
-          property = parts[0];
-          if (parts.length > 0)
-            subprop = parts[1];
-        }
-        var input = $(property);
-        if (!input) {
-          var inputs = document.getElementsByName(property);
-          // this may be radio buttons.
-          for (var j=0; j<inputs.length; ++j) {
-            var input1 = inputs[j];
-            if (subprop) {
-              input1[subprop] = value;
-            }
-            else if (input1.value == value) {
-              input = input1;
-              input.checked = true;
-              break;
+      $(document).ready(function(){
+        phone.addEventListener("propertyChange", function(event) {
+          var value = event.newValue;
+          var property = event.property;
+          var subprop = "";
+          if (property.indexOf(".") >= 0) {
+            var parts = property.split(".");
+            property = parts[0];
+            if (parts.length > 0)
+              subprop = parts[1];
+          }
+          var input = sel(property);
+          if (!input) {
+            var inputs = document.getElementsByName(property);
+            // this may be radio buttons.
+            for (var j=0; j<inputs.length; ++j) {
+              var input1 = inputs[j];
+              if (subprop) {
+                input1[subprop] = value;
+              }
+              else if (input1.value == value) {
+                input = input1;
+                input.checked = true;
+                break;
+              }
             }
           }
-        }
-        else {
-          if (input.localName == "input") {
-            if (input.type == "text" || input.type == "password" || input.type == "button") {
+          else {
+            if (input.localName == "input") {
+              if (input.type == "text" || input.type == "password" || input.type == "button") {
+                if (subprop)
+                  input[subprop] = value;
+                else
+                  input.value = value;
+              }
+              else if (input.type == "checkbox") {
+                if (subprop)
+                  input[subprop] = value;
+                else
+                  input.checked = (value && value != "false" ? true : false);
+              }
+              else if (input.type == "radio") {
+                if (subprop) {
+                  input[subprop] = value;
+                }
+              }
+            }
+            else if (input.localName == "span" || input.localName == "div") {
+              if (!subprop)
+                input.innerHTML = cleanHTML(value);
+            }
+            else if (input.localName == "select") {
               if (subprop)
                 input[subprop] = value;
               else
                 input.value = value;
             }
-            else if (input.type == "checkbox") {
-              if (subprop)
-                input[subprop] = value;
-              else
-                input.checked = (value && value != "false" ? true : false);
-            }
-            else if (input.type == "radio") {
-              if (subprop) {
-                input[subprop] = value;
-              }
+            else {
+              log("ignoring propertyChange for " + event.property);
             }
           }
-          else if (input.localName == "span" || input.localName == "div") {
-            if (!subprop)
-              input.innerHTML = cleanHTML(value);
+        });
+        phone.addEventListener("message", function(event) {
+          var msg = "";
+          if (event.sender) {
+          msg += event.sender + ": ";
           }
-          else if (input.localName == "select") {
-            if (subprop)
-              input[subprop] = value;
-            else
-              input.value = value;
+          if (event.text) {
+          msg += event.text;
           }
-          else {
-            log("ignoring propertyChange for " + event.property);
+          if (msg) {
+          var history = sel('im-history');
+          history.value += "\n" + msg;
+          history.scrollTop = history.scrollHeight;
           }
-        }
-      });
-      phone.addEventListener("message", function(event) {
-        var msg = "";
-        if (event.sender) {
-        msg += event.sender + ": ";
-        }
-        if (event.text) {
-        msg += event.text;
-        }
-        if (msg) {
-        var history = $('im-history');
-        history.value += "\n" + msg;
-        history.scrollTop = history.scrollHeight;
-        }
-      });
-      phone.populate();
-      phone.help("default");
-      if (phone.network_type != "WebRTC") {
-        swfobject.embedSWF("http://theintencity.com/flash-network/NetworkIO.swf", "flash-network", "215", "138", "10.0.0", "http://theintencity.com/flash-network/expressInstall.swf",
-        {"apiVersion": "1.0", "prefix": "network."},
-        {"allowScriptAccess": "always", "bgcolor" : "#f0f0f0"},
-        {"id": "flash-network", "name": "flash-network"});
-        network.movieName = "flash-network";
-        swfobject.embedSWF("http://theintencity.com/flash-network/VideoIO11.swf", "local-video", "240", "168", "11.0.0", "http://theintencity.com/flash-network/expressInstall.swf",
-        {"videoCodec": "H264Avc", "codec": "pcmu", "framesPerPacket": "2", "prefix": "network."},
-        {"allowScriptAccess": "always", "allowFullScreen": "true", "bgcolor": "#f0f0f0"},
-        {"id": "local-video", "name": "local-video"});
-        swfobject.embedSWF("http://theintencity.com/flash-network/VideoIO11.swf", "remote-video", "240", "168", "11.0.0", "http://theintencity.com/flash-network/expressInstall.swf",
-        {"videoCodec": "H264Avc", "codec": "pcmu", "framesPerPacket": "2", "prefix": "network."},
-        {"allowScriptAccess": "always", "allowFullScreen": "true", "bgcolor": "#f0f0f0"},
-        {"id": "remote-video", "name": "remote-video"});
-        }
-      else {
-        $('local-video').innerHTML = "";
-        $('remote-video').innerHTML = "";
-        $('flash-network').innerHTML = "";
+        });
+        phone.populate();
+        phone.help("default");
+        sel('local-video').innerHTML = "";
+        sel('remote-video').innerHTML = "";
         phone.detectHTML5();
-        $('webrtc-network').style.visibility = "visible";
-      }
+        sel('webrtc-network').style.visibility = "visible";
+
+        $("#log-box-button").click(function() {
+          if (log_status == 0) {
+            $("#log-box-body").show();
+            $("#log-box").animate({height: '+=186'}, 500, function() {
+              log_status = 2;
+            })
+            log_status = 1;
+          } else if (log_status == 2) {
+            $("#log-box").animate({height: '-=186'}, 500, function() {
+              log_status = 0;
+              $("#log-box-body").hide();
+            })
+            log_status = 1;
+          }
+        });
+        if (!phone.has_html5_websocket || !phone.has_html5_video || !phone.has_html5_webrtc)
+          $("#error-alert").css("background", "url(../images/error.png), no-repeat");
+        $("#error-alert").colorbox({inline:true, href: "#network-box", scrolling: false});
+        if (!phone.has_html5_websocket)
+          $.colorbox({inline:true, href: "#network-box", close: "", scrolling: false, overlayClose: false, escKey: false});
+        else $.colorbox({inline:true, href: "#registration", close: "", scrolling: false, overlayClose: false, escKey: false});
+      });

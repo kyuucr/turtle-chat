@@ -1,9 +1,12 @@
 @import 'nib'
 
-box-shadow(args...)
-  -webkit-box-shadow args
-  -moz-box-shadow args
-  box-shadow args
+do-radial-gradient(args...)
+  background args[3]
+  background-image -webkit-radial-gradient(unquote(join(',', args)))
+  background-image -moz-radial-gradient(unquote(join(',', args)))
+  background-image -ms-radial-gradient(unquote(join(',', args)))
+  background-image -o-radial-gradient(unquote(join(',', args)))
+  background-image radial-gradient(unquote(join(',', args)))
 
 body
   font-family: sans-serif
@@ -43,12 +46,15 @@ input.checkbox
 .has-shadow
   border: 1px solid #a0a0a0
   box-shadow(3px 3px 10px #cecece)
-  //-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#808080')"
-  //filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#808080')
+  -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#808080')"
+  filter: unquote("progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#808080')")
 
 .has-gradient
   background: linear-gradient(top, #f0f0f0, #e0e0e0)
-  //filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f0f0f0', endColorstr='#e0e0e0')
+  filter: unquote("progid:DXImageTransform.Microsoft.gradient(startColorstr='#f0f0f0', endColorstr='#e0e0e0')")
+
+.has-center-gradient
+  do-radial-gradient(center center, circle contain, #e0e0e0, #ffffff)
 
 .heading
   font-weight: bold
@@ -77,7 +83,7 @@ div.content-header
   border: 1px solid #c0c0c0
   background-color: #b0b0b0
   background: linear-gradient(top, #d0d0d0, #b0b0b0)
-  //filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#d0d0d0', endColorstr='#b0b0b0')
+  filter: unquote("progid:DXImageTransform.Microsoft.gradient(startColorstr='#d0d0d0', endColorstr='#b0b0b0')")
 
 div.help-div
   float: right
@@ -169,9 +175,15 @@ input.endbutton[disabled]
 
 div#config-box
   position: relative
-  top: 10px
-  height: 190px
-  left: 10px
+  display: block
+  margin: 0
+  width: 240px
+  float: left
+
+div#register-box
+  position: relative
+  display: block
+  margin: 0 0 0 10px
   width: 240px
   float: left
 
@@ -199,15 +211,6 @@ div#flash-network-box
   width: 240px
   float: left
   clear: right
-
-div#register-box
-  position: relative
-  top: 20px
-  height: 190px
-  left: 10px
-  width: 240px
-  float: left
-  clear: left
 
 div#im-box
   position: relative
