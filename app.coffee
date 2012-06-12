@@ -47,20 +47,26 @@ sip.start { websocket: app }
       if !userinfo
         return sip.send sip.makeResponse request, 404, 'Not found'
       else if Array.isArray(contact) && contact.length && (+(contact[0].params.expires || request.headers.expires || 300) > 0)
-        userinfo.session = userinfo.session || {realm: realm}
-        if !digest.authenticateRequest userinfo.session, request, {user: username, password: userinfo.password}
+        if(userinfo.session == undefined)
+          userinfo.session = {realm: realm}
+          digest.authenticateRequest userinfo.session, request, {user: username, password: userinfo.password}
           return sip.send digest.challenge userinfo.session, sip.makeResponse request, 401, 'Authentication Required'
         else
-          # user recognized, send 200 response
-          rs = sip.makeResponse request, 200, 'Ok'
-          if (remote.protocol == 'WS')
-            # if protocol is websocket, change contact to real address
-            contact[0].uri = 'sip:' + username + '@' + remote.address + ':' + remote.port + ';transport=ws'
-            contact[0].params['pub-gruu'] = request.headers.to.uri
-            contact[0].params['gr'] = contact[0].params['+sip.instance']
-            rs.headers.contact = contact
-          users[request.headers.to.uri] = contact[0]
-          return sip.send rs
+          if !digest.authenticateRequest userinfo.session, request, {user: username, password: userinfo.password}
+            delete userinfo.session
+            return sip.send sip.makeResponse request, 401, 'Authentication Unsuccesful'
+          else
+            delete userinfo.session
+            # user recognized, send 200 response
+            rs = sip.makeResponse request, 200, 'Ok'
+            if (remote.protocol == 'WS')
+              # if protocol is websocket, change contact to real address
+              contact[0].uri = 'sip:' + username + '@' + remote.address + ':' + remote.port + ';transport=ws'
+              contact[0].params['pub-gruu'] = request.headers.to.uri
+              contact[0].params['gr'] = contact[0].params['+sip.instance']
+              rs.headers.contact = contact
+            users[request.headers.to.uri] = contact[0]
+            return sip.send rs
       else
         delete users[request.headers.to.uri]
         delete userinfo.session

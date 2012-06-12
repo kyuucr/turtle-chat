@@ -21,19 +21,11 @@ html
     != js('phone.js')
     != css('colorbox')
   body
-    #error-alert(style='position: relative; float: right; margin-top: 5px')
+    img#error-alert(src='images/ok.png', title='Your browser support HTML5 features!')
     input.button(style='position: relative; float: right; margin-top: 10px', type='button', value='Unregister', title='click to unregister', onclick='return phone.register();')
     .wrap-box-1
       #call-box.content-box.has-shadow.has-gradient
-        .content-header
-          | Call
-          .help-div
-            a(href='#', title='Save call capabilities', onclick='return phone.enableBox(\'call\', false);')
-              img#save_call.help-img(src='save.png', style='visibility: hidden;')
-            a(href='#', title='Edit call capabilities', onclick='return phone.enableBox(\'call\', true);')
-              img#edit_call.help-img(src='edit.png', style='visibility: visible;')
-            a(href='#', title='How to make/receive call?', onclick='return phone.help(\'call\');')
-              img.help-img(src='help.png')
+        .content-header Call
         div(style='padding: 4px;')
           select#target_scheme.uri-scheme(disabled='disabled', onchange='phone.setProperty(\'target_scheme\', [\'sip\', \'tel\', \'urn\'][sel(\'target_scheme\').selectedIndex])')
             option#target_scheme_sip(value='sip') sip
@@ -114,13 +106,7 @@ html
           div(style='position: absolute; left: 6px; bottom: 6px;')
             span#call_state idle
       #im-box.content-box.has-shadow.has-gradient
-        .content-header
-          | Text Chat
-          .help-div
-            a(href='#', title='Print text chat', onclick='return phone.print(sel(\'im-history\').value)')
-              img.print-img(src='print.png')
-            a(href='#', title='How to send/receive text chat?', onclick='return phone.help(\'im\');')
-              img.help-img(src='help.png')
+        .content-header Text Chat
         div(style='width: 100%; height: 170px; bottom: 0px;')
           #im-history-box
             textarea#im-history(readonly='readonly') This area displays the text messages.
@@ -128,23 +114,12 @@ html
           input#im-button(type='button', value='send', onclick='phone.sendText(sel(\'im-input\').value); sel(\'im-input\').value=\'\'; return false;')
     .wrap-box-2
       #remote-video-box.content-box.has-shadow.has-gradient
-        .content-header
-          | Remote Video
-          .help-div
-            a(href='#', title='Toggle control panel', onclick='phone.setVideoProperty(\'remote-video\', \'controls\', !phone.getVideoProperty(\'remote-video\', \'controls\')); return false;')
-              img.help-img(src='edit.png', style='visibility: visible;')
-            a(href='#', title='What is remote video?', onclick='return phone.help(\'remote-video\');')
-              img.help-img(src='help.png')
+        .content-header Remote Video
         #remote-video
       #local-video-box.content-box.has-shadow.has-gradient
         .content-header
           | Local Video
           input#local-video-on(type='checkbox', style='height: 12px; padding: 0px; margin: 0px;', onclick='phone.setVideoProperty(\'local-video\', \'live\', sel(\'local-video-on\').checked)')
-          .help-div
-            a(href='#', title='Toggle control panel', onclick='return phone.toggleControls(\'local-video\')')
-              img.help-img(src='edit.png', style='visibility: visible;')
-            a(href='#', title='What is local video?', onclick='return phone.help(\'local-video\');')
-              img.help-img(src='help.png')
         #local-video
     #log-box
       #log-text-div
@@ -337,7 +312,7 @@ html
           }
         });
         if (!phone.has_html5_websocket || !phone.has_html5_video || !phone.has_html5_webrtc)
-          $("#error-alert").css("background", "url(../images/error.png), no-repeat");
+          $("#error-alert").attr("src", "images/error.png").attr("title", "Your browser didn't support some of HTML5 features");
         $("#error-alert").colorbox({inline:true, href: "#network-box", scrolling: false});
         if (!phone.has_html5_websocket)
           $.colorbox({inline:true, href: "#network-box", close: "", scrolling: false, overlayClose: false, escKey: false});

@@ -31,7 +31,7 @@ function Phone() {
     this.transport = 'ws';
     
     // properties in register
-    this.outbound = 'proxy';
+    this.outbound = 'target';
     this.outbound_proxy_address ='127.0.0.1:5060';
     this.register_interval = 180;
     this.rport = true;
@@ -173,8 +173,8 @@ Phone.prototype.detectHTML5 = function() {
         
         var remote = document.createElement("video");
         remote.id = "html5-remote-video";
-        remote.style.width = "240px";
-        remote.style.height = "168px";
+        remote.style.width = "320px";
+        remote.style.height = "231px";
 //        remote.style.backgroundColor = "#000000";
         remote.autoplay = "autoplay";
         sel('remote-video').appendChild(remote);
