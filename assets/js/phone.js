@@ -31,7 +31,7 @@ function Phone() {
     this.transport = 'ws';
     
     // properties in register
-    this.outbound = 'proxy';
+    this.outbound = 'target';
     this.outbound_proxy_address ='127.0.0.1:5060';
     this.register_interval = 180;
     this.rport = true;
@@ -131,7 +131,7 @@ Phone.prototype.detectHTML5 = function() {
     this.setProperty("has_html5_webrtc", typeof navigator.webkitGetUserMedia != "undefined");
     log("detecting HTML support websocket=" + this.has_html5_websocket + " video=" + this.has_html5_video + " webrtc=" + this.has_html5_webrtc);
     if (!this.has_html5_websocket || !this.has_html5_video || !this.has_html5_webrtc) {
-        $("webrtc-network").innerHTML += '<font color="red">Some HTML5 features are missing in your browser</font>';
+        sel("webrtc-network").innerHTML += '<font color="red">Some HTML5 features are missing in your browser</font>';
     }
     
     if (this.has_html5_websocket) {
@@ -139,8 +139,10 @@ Phone.prototype.detectHTML5 = function() {
         this.setProperty("network_status", "available");
         this.enableButtons(true);
         this.enableBox('config', true);
-        $("websocket_path").value = this.websocket_path;
-        $("listen_ip").style.visibility = "hidden";
+        this.enableBox("register", true);
+        this.enableBox("call", true);
+        this.enableBox("network", true);
+        //sel("websocket_path").value = this.websocket_path;
         
         this.listen_ip = 'r' + Math.floor(Math.random() * 10000000000) + ".invalid";
         this._listen_port = 0;
@@ -155,6 +157,9 @@ Phone.prototype.detectHTML5 = function() {
             this.setProperty("outbound_proxy_address", outbound_proxy_address);
         }
     }
+    else {
+        // TODO: show network status popup
+    }
     
     if (this.has_html5_video) {
         // add <video> to local and remote video boxes
@@ -164,21 +169,21 @@ Phone.prototype.detectHTML5 = function() {
         local.style.height = "168px";
 //        local.style.backgroundColor = "#000000";
         local.autoplay = "autoplay";
-        $('local-video').appendChild(local);
+        sel('local-video').appendChild(local);
         
         var remote = document.createElement("video");
         remote.id = "html5-remote-video";
-        remote.style.width = "240px";
-        remote.style.height = "168px";
+        remote.style.width = "320px";
+        remote.style.height = "231px";
 //        remote.style.backgroundColor = "#000000";
         remote.autoplay = "autoplay";
-        $('remote-video').appendChild(remote);
+        sel('remote-video').appendChild(remote);
         
         var audio = document.createElement("audio");
         audio.id = "html5-audio";
         audio.autoplay = "autoplay";
         audio.loop = "loop";
-        $("webrtc-network").appendChild(audio);
+        sel("webrtc-network").appendChild(audio);
     }
 };
 
@@ -256,8 +261,11 @@ Phone.prototype.statusChanged = function(value) {
     this.enableButtons(enable);
     
     if (enable) {
-        // enable config edit only
+        // enable all box
         this.enableBox("config", true);
+        this.enableBox("register", true);
+        this.enableBox("call", true);
+        this.enableBox("network", true);
     }
     else {
         // disable all edits and reset
@@ -285,18 +293,19 @@ Phone.prototype.enable = function(name, enable) {
 
 
 Phone.prototype.enableBox = function(name, enable) {
-    $('edit_' + name).style.visibility = (enable ? "hidden" : "visible");
-    $('save_' + name).style.visibility = (enable ? "visible" : "hidden");
+    // sel('edit_' + name).style.visibility = (enable ? "hidden" : "visible");
+    // sel('save_' + name).style.visibility = (enable ? "visible" : "hidden");
     
     var inputs = [];
     if (name == 'config')
         inputs = ["displayname", "username", "domain", "authname", "password"];
-        //inputs = ["displayname", "username", "domain", "authname", "password", "transport_udp", "transport_tcp", "transport_ws"];
+        // inputs = ["displayname", "username", "domain", "authname", "password", "transport_udp", "transport_tcp", "transport_ws"];
     else if (name == 'register')
         inputs = ["outbound_target", "outbound_proxy", "outbound_proxy_address", "register_interval", "local_aor"];
-        //inputs = ["outbound_domain", "outbound_target", "outbound_proxy", "outbound_proxy_address", "register_interval", "rport", "sipoutbound", "local_aor"];
+        // inputs = ["outbound_domain", "outbound_target", "outbound_proxy", "outbound_proxy_address", "register_interval", "rport", "sipoutbound", "local_aor"];
     else if (name == 'network')
-        inputs = ["listen_ip", "network_type", "websocket_path", "enable_sound_alert"];
+        inputs = ["listen_ip", "network_type", "enable_sound_alert"];
+        // inputs = ["listen_ip", "network_type", "websocket_path", "enable_sound_alert"];
     else if (name == 'call')
         inputs = ['has_audio', 'has_video'];
         // inputs = ['has_audio', 'has_tones', 'has_video', 'has_text', 'has_location']; // TODO: eventually use this
@@ -305,14 +314,14 @@ Phone.prototype.enableBox = function(name, enable) {
         this.enable(inputs[i], enable);
     }
     
-    if (enable) {
-        var boxes = ["config", "register", "call", "network"];
-        for (var i=0; i<boxes.length; ++i) {
-            if (boxes[i] != name) {
-                this.enableBox(boxes[i], false);
-            }
-        }
-    }
+    // if (enable) {
+    //     var boxes = ["config", "register", "call", "network"];
+    //     for (var i=0; i<boxes.length; ++i) {
+    //         if (boxes[i] != name) {
+    //             this.enableBox(boxes[i], false);
+    //         }
+    //     }
+    // }
     return false;
 };
 
@@ -525,7 +534,7 @@ Phone.prototype.resetSockState = function() {
         this.setProperty("call_button.disabled", false);
         this.setProperty("end_button.disabled", true);
     }
-    
+    $.colorbox({inline:true, href: "#registration", close: "", scrolling: false, overlayClose: false, escKey: false});
 };
 
 Phone.prototype.createStack = function() {
@@ -595,6 +604,7 @@ Phone.prototype.receivedRegisterResponse = function(ua, response) {
                 this.setProperty("register_state", "registered");
                 this.setProperty("register_button", "Unregister");
                 this.setProperty("register_button.disabled", false);
+                $.colorbox.close();
             }
             else {
                 this.setProperty("register_state", "not registered");
@@ -608,6 +618,7 @@ Phone.prototype.receivedRegisterResponse = function(ua, response) {
             this.setProperty("register_button", "Register");
             this.setProperty("register_button.disabled", false);
             this._reg = null;
+            $.colorbox({inline:true, href: "#registration", close: "", scrolling: false, overlayClose: false, escKey: false});
         }
     }
 };
@@ -635,7 +646,7 @@ Phone.prototype.sendInvite = function() {
 Phone.prototype.setVideoProperty = function(videoname, attr, value) {
     if (this.network_type == "WebRTC") {
         log("set " + videoname + "." + attr + " = " + value);
-        var obj = $("html5-" + videoname);
+        var obj = sel("html5-" + videoname);
         if (obj) {
             if (attr == "controls") {
                 obj.controls = value;
@@ -679,7 +690,7 @@ Phone.prototype.setVideoProperty = function(videoname, attr, value) {
 Phone.prototype.getVideoProperty = function(videoname, attr) {
     var result = undefined;
     if (this.network_type == "WebRTC") {
-        var obj = $("html5-" + videoname);
+        var obj = sel("html5-" + videoname);
         if (obj) {
             if (attr == "controls") {
                 result = obj.controls;
@@ -715,7 +726,7 @@ Phone.prototype.onUserMediaSuccess = function(stream) {
         }
     }
     
-    var video = $("html5-local-video");
+    var video = sel("html5-local-video");
     if (video) {
         var url = webkitURL.createObjectURL(stream);
         log('webrtc - local-video.src="' + url + '"');
@@ -725,7 +736,7 @@ Phone.prototype.onUserMediaSuccess = function(stream) {
 
 Phone.prototype.onUserMediaError = function(error) {
     log("webrtc - failed to get access to local media: " + error.code);
-    var obj = $("local-video-on");
+    var obj = sel("local-video-on");
     if (obj) {
         obj.checked = false;
     }
@@ -1060,7 +1071,7 @@ Phone.prototype.onWebRtcOpen = function(message) {
 
 Phone.prototype.onWebRtcAddStream = function(stream) {
     log("webrtc - onaddstream(...)");
-    var video = $("html5-remote-video");
+    var video = sel("html5-remote-video");
     if (video) {
         var url = webkitURL.createObjectURL(stream);
         log('webrtc - remote-video.src="' + url + '"');
@@ -1070,7 +1081,7 @@ Phone.prototype.onWebRtcAddStream = function(stream) {
 
 Phone.prototype.onWebRtcRemoveStream = function() {
     log("webrtc - onremovestream()");
-    var video = $("html5-remote-video");
+    var video = sel("html5-remote-video");
     if (video) {
         log("webrtc - remote-video.src=null");
         video.setAttribute('src', '');
@@ -1082,11 +1093,11 @@ Phone.prototype.hungup = function() {
         this._call = null;
     }
     if (this.network_type == "WebRTC") {
-        var local = $("html5-local-video");
+        var local = sel("html5-local-video");
         if (local) {
             local.setAttribute('src', '');
         }
-        var remote = $("html5-remote-video");
+        var remote = sel("html5-remote-video");
         if (remote) {
             remote.setAttribute('src', '');
         }
@@ -1239,7 +1250,7 @@ Phone.prototype.createMediaConnections = function() {
 
 Phone.prototype.playSound = function(value) {
     if (this.enable_sound_alert) {
-        var audio = $("html5-audio");
+        var audio = sel("html5-audio");
         if (audio) {
             // TODO: use .ogg for chrome/firefox/opera and .mp3 for IE/safari
             audio.setAttribute('src',(value ? value + ".ogg" : value));
@@ -1493,8 +1504,8 @@ Phone.prototype.dialogCreated = function(dialog, ua, stack) {
 
 Phone.prototype.authenticate = function(ua, header, stack) {
     log("phone.authenticate() called");
-    header.username = $('authname').value;
-    header.password = $('password').value;
+    header.username = sel('authname').value;
+    header.password = sel('password').value;
     return true;
 };
 
@@ -1588,51 +1599,51 @@ Phone.prototype.toggleControls = function(name) {
 };
 
 Phone.prototype.help = function(name) {
-    var text = null;
-    if (name == "default") {
-        text = 'This web-based phone allows you to register with a server, and make or receive VoIP calls from web. This is a demonstration of the <a href="http://code.google.com/p/sip-js">SIP in Javascript</a> project.<br/><br/>'
-        + 'Please click on help <a href="#" onclick="return help(\'default\');"><img src="help.png"></img></a> anywhere on this page to learn how to use that part of the web phone.<br/><br/>'
-        + 'Additionally, the edit <img src="edit.png"></img> and save <img src="save.png"></img> buttons allow you to edit and save certain configuration properties in that box.The buttons and controls are enabled only when they make sense in a particular system state.<br/><br/>'
-        + 'Once you reach this page, the Flash Network application kicks in to launch the separate application that assists this page in network activity. The first time initialization includes installation and launch of the <a href="http://theintencity.com/flash-network" target="_blank">Flash Network</a> application. Once the initialization is complete and the <input href="#" value="Register" type="button" class="button" disabled="disabled"/> and <input href="#" value="Call" type="button" class="button" disabled="disabled"/> buttons are enabled, you can proceed with using this web phone. All the controls except Flash Network are disabled until the initialization is complete.';
-    }
-    else if (name == "configuration") {
-        text = 'Click on the edit <img src="edit.png"></img> button in the Configuration box to enable the configuration controls. Type the values in various edit boxes to set the configuration properties. This must be done before clicking on the <input type="button" class="button" value="Register"/> or <input type="button" class="callbutton" value="Call"/> button for that function to use the correct configuration properties.<br/><br/>'
-        + 'You may use your full name as the display name. The user name and domain are provided by your VoIP provider, and are used to define your address-of-record such as sip:myname@iptel.org. The auth name and password are used for registration as well as for password authenticated outbound calls. Usually the auth name is same as your user name. We prefer to use the UDP transport, but occassionally you may need to use TCP. The WS transport indicates emerging WebSocket for SIP signaling transport while using WebRTC for media path.<br/><br/>'
-        + 'The features that are not yet implemented are not enabled, e.g., TCP and WS are future work.';
-    }
-    else if (name == "register") {
-        text = 'To register (login) with your VoIP service provider, enter the configuration properties and the registration properties, and click on <input type="button" class="button" value="Register"/>. You need to click on the edit <img src="edit.png"></img> button in the Register box to enable the registration properties controls. The registration properties are as follows.<br/><br/>The outbound messages can be sent via the target domain or a specific proxy address. The registration interval should be small for web phone such as 3 minutes, i.e., 180 seconds. The "rport" feature allows traversal across NAT boundaries for responses over UDP transport. The "sip-outbound" feature allows traversal across NAT boundaries for incoming requests over UDP and TCP transport. The AoR (address-of-record) is automatically updated when you change the configuration parameters. There are two status indications, first for listening SIP socket and second for registration. The registration status indicates the current status of your login, e.g., "registered" or "not registered".<br/><br/>'
-        + 'The features that are not yet implemented are not enabled, e.g., sip-outbound is future work, rport is always enabled, and AoR is read-only based on your Configuration properties.';
-    }
-    else if (name == "call") {
-        text = 'To make an outbound call, enter the target destination address such as "kundan@iptel.org" and click on the <input type="button" class="callbutton" value="Call"/> button. To close a call, cancel an outbound invitation or reject an incoming call, click on the <input type="button" class="endbutton" value="End"/> button. These buttons are enabled depending on the call and system state. The call state is displayed on the bottom left corner of this box, e.g., "idle", "inviting", "incoming", "active", "failed" or "closed".<br/><br/>'
-        + 'When you receive an incoming call, the call status changes to "incoming" and you can click on the <input type="button" class="callbutton" value="Call"/> button to answer or the <input type="button" class="endbutton" value="End"/> button to decline the call invitation. The caller address is populated in the target destination address for an incoming call.<br/><br/>'
-        + 'To do a self test call, just set your target destination to correspond to your own user name and domain configuration parameters and click on the Call button. This is useful for testing the call signaling and media flow in a loopback mode.<br/><br/>'
-        + 'To dial a phone number or urn address, click on "sip:" to select the correct target address scheme. If you use the dial-pad to enter the target number, the scheme is automatically changed to "tel:"<br/><br/>'
-        + 'You do not need to register, to make an outbound call. But without registering you will not be able to receive an incoming call, unless the caller dials your dynamic IP and port directly.<br/><br/>'
-        + 'Click on the edit <img src="edit.png"></img> button in the Call box to enable the media capabilities of the call. Default is to select audio and video, but this allows you to make an audio-only call. The features that are not yet implemented are not enabled, e.g., Text, Tones and Location are for future work.';
-    }
-    else if (name == "im") {
-        text = 'To send a text message simple type your text message in the edit box in the bottom left corner, and press enter or click on the <input type="button" class="button" value="Send"/> button. The text chat history including sent and received message as well as any call related system messages are shown in the text area above.<br/><br/>'
-        + 'The outbound text message is sent to the target destination address of the Call box if you are not in a call, and is sent to the remote party if you are in a call. Thus, if you are in a call, then changing the target destination address does not change the text message target. For incoming message outside a call, the target destination address is updated with the source of the received text message.<br/><br/>'
-        + 'Click on the print <img src="print.png"></img> button to print this history.';
-    }
-    else if (name == "local-video") {
-        text = 'This area displays your camera view in a video call. It uses the external <a href="http://code.google.com/p/flash-videoio" target="_blank">Flash VideoIO</a> project to facilitate audio and video device capture. You may click on the check box <input type="checkbox"/> to toggle your camera view independent of a video call. You may click on the edit <img src="edit.png"></img> button to enable or disable the VideoIO\'s control panel in the video display.';
-    }
-    else if (name == "remote-video") {
-        text = 'This area displays the received video view in a video call. It uses the external <a href="http://code.google.com/p/flash-videoio" target="_blank">Flash VideoIO</a> project to facilitate audio and video playback and display. You may click on the edit <img src="edit.png"></img> button to enable or disable the VideoIO\'s control panel in the video display.';
-    }
-    else if (name == "flash-network") {
-        text = 'This area shows the <a href="http://theintencity.com/flash-network" target="_blank">Flash Network</a> activities including the first time initialization prompts, the authentication prompts and any network status. It also displays the selected local IP address that is used for your phone. For most of the prompts, you will follow the standard Flash Network <a href="http://theintencity.com/flash-network/userguide.html" target="_blank">user guide</a>.<br/><br/>'
-        + 'For changing the selected local IP address, click on the <img src="edit.png"></img> button and enter the new IP address. This must be done before the SIP listening socket is created. The SIP listening socket is created the first time you click on Register or Call button.<br/><br/>'
-        + 'For trying out the experimental WebRTC technology that uses WebSocket for signaling, click on the change link in the title and confirm the changed launch when prompted. Alternatively, you can use the <tt>?network_type=WebRTC</tt> URL parameter on this page to launch with WebRTC and WebSocket support.' ;
-    }
-    else if (name == "program-log") {
-        text = 'This area displays the debug trace for the software including all the necessary SIP messages that are needed for debugging any problems. To report any issues, please attach your full program log. You can click on the check box <input type="checkbox" checked="checked"/> to toggle the auto-scroll mode of this view. Click on the <img src="print.png"></img> button to print the full program log.';
-    }
-    if (!text)
-        text = 'Help text for this feature is not written';
-    $("help").innerHTML = text;
+    // var text = null;
+    // if (name == "default") {
+    //     text = 'This web-based phone allows you to register with a server, and make or receive VoIP calls from web. This is a demonstration of the <a href="http://code.google.com/p/sip-js">SIP in Javascript</a> project.<br/><br/>'
+    //     + 'Please click on help <a href="#" onclick="return help(\'default\');"><img src="help.png"></img></a> anywhere on this page to learn how to use that part of the web phone.<br/><br/>'
+    //     + 'Additionally, the edit <img src="edit.png"></img> and save <img src="save.png"></img> buttons allow you to edit and save certain configuration properties in that box.The buttons and controls are enabled only when they make sense in a particular system state.<br/><br/>'
+    //     + 'Once you reach this page, the Flash Network application kicks in to launch the separate application that assists this page in network activity. The first time initialization includes installation and launch of the <a href="http://theintencity.com/flash-network" target="_blank">Flash Network</a> application. Once the initialization is complete and the <input href="#" value="Register" type="button" class="button" disabled="disabled"/> and <input href="#" value="Call" type="button" class="button" disabled="disabled"/> buttons are enabled, you can proceed with using this web phone. All the controls except Flash Network are disabled until the initialization is complete.';
+    // }
+    // else if (name == "configuration") {
+    //     text = 'Click on the edit <img src="edit.png"></img> button in the Configuration box to enable the configuration controls. Type the values in various edit boxes to set the configuration properties. This must be done before clicking on the <input type="button" class="button" value="Register"/> or <input type="button" class="callbutton" value="Call"/> button for that function to use the correct configuration properties.<br/><br/>'
+    //     + 'You may use your full name as the display name. The user name and domain are provided by your VoIP provider, and are used to define your address-of-record such as sip:myname@iptel.org. The auth name and password are used for registration as well as for password authenticated outbound calls. Usually the auth name is same as your user name. We prefer to use the UDP transport, but occassionally you may need to use TCP. The WS transport indicates emerging WebSocket for SIP signaling transport while using WebRTC for media path.<br/><br/>'
+    //     + 'The features that are not yet implemented are not enabled, e.g., TCP and WS are future work.';
+    // }
+    // else if (name == "register") {
+    //     text = 'To register (login) with your VoIP service provider, enter the configuration properties and the registration properties, and click on <input type="button" class="button" value="Register"/>. You need to click on the edit <img src="edit.png"></img> button in the Register box to enable the registration properties controls. The registration properties are as follows.<br/><br/>The outbound messages can be sent via the target domain or a specific proxy address. The registration interval should be small for web phone such as 3 minutes, i.e., 180 seconds. The "rport" feature allows traversal across NAT boundaries for responses over UDP transport. The "sip-outbound" feature allows traversal across NAT boundaries for incoming requests over UDP and TCP transport. The AoR (address-of-record) is automatically updated when you change the configuration parameters. There are two status indications, first for listening SIP socket and second for registration. The registration status indicates the current status of your login, e.g., "registered" or "not registered".<br/><br/>'
+    //     + 'The features that are not yet implemented are not enabled, e.g., sip-outbound is future work, rport is always enabled, and AoR is read-only based on your Configuration properties.';
+    // }
+    // else if (name == "call") {
+    //     text = 'To make an outbound call, enter the target destination address such as "kundan@iptel.org" and click on the <input type="button" class="callbutton" value="Call"/> button. To close a call, cancel an outbound invitation or reject an incoming call, click on the <input type="button" class="endbutton" value="End"/> button. These buttons are enabled depending on the call and system state. The call state is displayed on the bottom left corner of this box, e.g., "idle", "inviting", "incoming", "active", "failed" or "closed".<br/><br/>'
+    //     + 'When you receive an incoming call, the call status changes to "incoming" and you can click on the <input type="button" class="callbutton" value="Call"/> button to answer or the <input type="button" class="endbutton" value="End"/> button to decline the call invitation. The caller address is populated in the target destination address for an incoming call.<br/><br/>'
+    //     + 'To do a self test call, just set your target destination to correspond to your own user name and domain configuration parameters and click on the Call button. This is useful for testing the call signaling and media flow in a loopback mode.<br/><br/>'
+    //     + 'To dial a phone number or urn address, click on "sip:" to select the correct target address scheme. If you use the dial-pad to enter the target number, the scheme is automatically changed to "tel:"<br/><br/>'
+    //     + 'You do not need to register, to make an outbound call. But without registering you will not be able to receive an incoming call, unless the caller dials your dynamic IP and port directly.<br/><br/>'
+    //     + 'Click on the edit <img src="edit.png"></img> button in the Call box to enable the media capabilities of the call. Default is to select audio and video, but this allows you to make an audio-only call. The features that are not yet implemented are not enabled, e.g., Text, Tones and Location are for future work.';
+    // }
+    // else if (name == "im") {
+    //     text = 'To send a text message simple type your text message in the edit box in the bottom left corner, and press enter or click on the <input type="button" class="button" value="Send"/> button. The text chat history including sent and received message as well as any call related system messages are shown in the text area above.<br/><br/>'
+    //     + 'The outbound text message is sent to the target destination address of the Call box if you are not in a call, and is sent to the remote party if you are in a call. Thus, if you are in a call, then changing the target destination address does not change the text message target. For incoming message outside a call, the target destination address is updated with the source of the received text message.<br/><br/>'
+    //     + 'Click on the print <img src="print.png"></img> button to print this history.';
+    // }
+    // else if (name == "local-video") {
+    //     text = 'This area displays your camera view in a video call. It uses the external <a href="http://code.google.com/p/flash-videoio" target="_blank">Flash VideoIO</a> project to facilitate audio and video device capture. You may click on the check box <input type="checkbox"/> to toggle your camera view independent of a video call. You may click on the edit <img src="edit.png"></img> button to enable or disable the VideoIO\'s control panel in the video display.';
+    // }
+    // else if (name == "remote-video") {
+    //     text = 'This area displays the received video view in a video call. It uses the external <a href="http://code.google.com/p/flash-videoio" target="_blank">Flash VideoIO</a> project to facilitate audio and video playback and display. You may click on the edit <img src="edit.png"></img> button to enable or disable the VideoIO\'s control panel in the video display.';
+    // }
+    // else if (name == "flash-network") {
+    //     text = 'This area shows the <a href="http://theintencity.com/flash-network" target="_blank">Flash Network</a> activities including the first time initialization prompts, the authentication prompts and any network status. It also displays the selected local IP address that is used for your phone. For most of the prompts, you will follow the standard Flash Network <a href="http://theintencity.com/flash-network/userguide.html" target="_blank">user guide</a>.<br/><br/>'
+    //     + 'For changing the selected local IP address, click on the <img src="edit.png"></img> button and enter the new IP address. This must be done before the SIP listening socket is created. The SIP listening socket is created the first time you click on Register or Call button.<br/><br/>'
+    //     + 'For trying out the experimental WebRTC technology that uses WebSocket for signaling, click on the change link in the title and confirm the changed launch when prompted. Alternatively, you can use the <tt>?network_type=WebRTC</tt> URL parameter on this page to launch with WebRTC and WebSocket support.' ;
+    // }
+    // else if (name == "program-log") {
+    //     text = 'This area displays the debug trace for the software including all the necessary SIP messages that are needed for debugging any problems. To report any issues, please attach your full program log. You can click on the check box <input type="checkbox" checked="checked"/> to toggle the auto-scroll mode of this view. Click on the <img src="print.png"></img> button to print the full program log.';
+    // }
+    // if (!text)
+    //     text = 'Help text for this feature is not written';
+    // sel("help").innerHTML = text;
     return false;
 };
