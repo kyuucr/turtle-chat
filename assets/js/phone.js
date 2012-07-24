@@ -422,8 +422,11 @@ Phone.prototype.end = function() {
         else if (this.call_state == "active" || this.call_state == "accepted" || this.call_state == "accepting") {
             this.sendBye();
         }
-        else if (this.call_state != "failed" && this.call_state != "closed") {
-            log("ignoring end in " + this.call_state + " state");
+        else {
+            if (this.call_state != "failed" && this.call_state != "closed") {
+                log("ignoring end in " + this.call_state + " state");
+            }
+            this.hungup();
         }
         this.setProperty("call_button.disabled", false);
         this.setProperty("end_button.disabled", true);
@@ -656,7 +659,7 @@ Phone.prototype.setVideoProperty = function(videoname, attr, value) {
                     log("local-stream=" + (this._webrtc_local_stream === null));
                     if (this._webrtc_local_stream == null) {
                         var phone = this;
-                        navigator.webkitGetUserMedia({ video: true, audio: true },
+                        navigator.webkitGetUserMedia({ video: this.has_video, audio: this.has_audio },
                             function(stream) { phone.onUserMediaSuccess(stream); },
                             function(error) { phone.onUserMediaError(error); });
                     }

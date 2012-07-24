@@ -13,7 +13,11 @@ reset = '\x1B[0m'
 
 registry = {
   '100': {password: '1234'},
-  '101':  {password:  'qwerty'}
+  '101':  {password:  'qwerty'},
+  '102': {password: '1234'},
+  '103': {password: '1234'},
+  '104': {password: '1234'},
+  '105': {password: '1234'},
 }
 users = []
 realm = os.hostname()
@@ -75,11 +79,11 @@ sip.start { websocket: app }
     from = users[request.headers.from.uri]
     to = users[request.headers.to.uri]
     
-    if request.method == 'INVITE'
-      if !from
-        return sip.send sip.makeResponse request, 401, 'Please register to use our server'
-      else if !to
-        return sip.send sip.makeResponse request, 404, 'Not found'
+    #if request.method == 'INVITE' || request.method == 'MESSAGE'
+    if !from
+      return sip.send sip.makeResponse request, 401, 'Please register to use our server'
+    else if !to
+      return sip.send sip.makeResponse request, 404, 'Not found'
 
     request.uri = to.uri
 
