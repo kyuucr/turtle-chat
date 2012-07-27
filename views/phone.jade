@@ -11,7 +11,7 @@ html
       function log(msg, type) {
         var log_text = sel("log-text");
         if (log_text) {
-          log_text.value += "\\n" + msg;
+          log_text.value += "\n" + msg;
         if (phone && phone.log_scroll)
           log_text.scrollTop = log_text.scrollHeight;
         }
@@ -285,7 +285,7 @@ html
           }
           if (msg) {
           var history = sel('im-history');
-          history.value += "\\n" + msg;
+          history.value += "\n" + msg;
           history.scrollTop = history.scrollHeight;
           }
         });
